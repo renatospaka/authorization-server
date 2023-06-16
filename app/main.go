@@ -1,13 +1,15 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"database/sql"
 	"log"
+
 	// "net/http"
 
 	// httpServer "github.com/renatospaka/authorization-server/adapter/httpServer"
 	postgres "github.com/renatospaka/authorization-server/adapter/postgres"
+	"github.com/renatospaka/authorization-server/adapter/postgres/grpcServer"
 	// "github.com/renatospaka/authorization-server/adapter/rest/controller"
 	// "github.com/renatospaka/authorization-server/core/usecase"
 	"github.com/renatospaka/authorization-server/utils/configs"
@@ -20,7 +22,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	// ctx := context.Background()
+	ctx := context.Background()
 	
 	//open connection to the database
 	log.Println("iniciando conexão com o banco de dados")
@@ -35,8 +37,9 @@ func main() {
 	// usecases := usecase.NewTransactionUsecase(repo)
 	// controllers := controller.NewTransactionController(usecases)
 	// webServer := httpServer.NewHttpServer(ctx, controllers)
+	grpcSrv := grpcServer.NewGrpcServer(ctx)
 
 	//start web server
 	log.Println("autorizador de transações escutando porta:", configs.GRPCServerPort)
-	// http.ListenAndServe(":"+configs.WEBServerPort, webServer.Server)
+	grpcSrv.Connect( configs.GRPCServerPort)
 }
