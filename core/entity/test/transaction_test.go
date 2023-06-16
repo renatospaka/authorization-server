@@ -35,7 +35,7 @@ func TestNewAuthorizationValueIsNegative(t *testing.T) {
 	assert.EqualError(t, err, entity.ErrValueIsNegative.Error())
 }
 
-func TestApproveIt(t *testing.T) {
+func TestApprove(t *testing.T) {
 	tr, err := entity.NewAuthorization(200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, tr)
@@ -43,13 +43,13 @@ func TestApproveIt(t *testing.T) {
 	assert.True(t, tr.DeniedAt().IsZero())
 	assert.True(t, tr.ApprovedAt().IsZero())
 
-	tr.ApprovedIt()
+	tr.Approve()
 	assert.Equal(t, entity.TR_APPROVED, tr.GetStatus())
 	assert.True(t, tr.DeniedAt().IsZero())
 	assert.False(t, tr.ApprovedAt().IsZero())
 }
 
-func TestDenyIt(t *testing.T) {
+func TestDeny(t *testing.T) {
 	tr, err := entity.NewAuthorization(200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, tr)
@@ -57,7 +57,7 @@ func TestDenyIt(t *testing.T) {
 	assert.True(t, tr.DeniedAt().IsZero())
 	assert.True(t, tr.ApprovedAt().IsZero())
 
-	tr.DenyIt()
+	tr.Deny()
 	assert.Equal(t, entity.TR_DENIED, tr.GetStatus())
 	assert.False(t, tr.DeniedAt().IsZero())
 	assert.True(t, tr.ApprovedAt().IsZero())

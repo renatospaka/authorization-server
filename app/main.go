@@ -5,13 +5,10 @@ import (
 	"database/sql"
 	"log"
 
-	// "net/http"
-
-	// httpServer "github.com/renatospaka/authorization-server/adapter/httpServer"
 	postgres "github.com/renatospaka/authorization-server/adapter/postgres"
-	"github.com/renatospaka/authorization-server/adapter/postgres/grpcServer"
+	"github.com/renatospaka/authorization-server/adapter/grpcServer"
 	// "github.com/renatospaka/authorization-server/adapter/rest/controller"
-	// "github.com/renatospaka/authorization-server/core/usecase"
+	"github.com/renatospaka/authorization-server/core/usecase"
 	"github.com/renatospaka/authorization-server/utils/configs"
 )
 
@@ -33,9 +30,9 @@ func main() {
 	}
 	defer db.Close()
 
-	postgres.NewPostgresDatabase(db)
-	// usecases := usecase.NewTransactionUsecase(repo)
-	// controllers := controller.NewTransactionController(usecases)
+	repo := postgres.NewPostgresDatabase(db)
+	usecase.NewAuthorizationUsecase(repo)
+	// controllers := controller.NewAuthorizationController(usecases)
 	// webServer := httpServer.NewHttpServer(ctx, controllers)
 	grpcSrv := grpcServer.NewGrpcServer(ctx)
 
