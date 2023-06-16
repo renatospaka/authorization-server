@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/go/src/
     ports:
-      - 3160:8050
+      - 3160:50051
     depends_on:
       - db
     extra_hosts:

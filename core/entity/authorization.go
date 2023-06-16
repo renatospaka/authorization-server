@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"math/rand"
 	"time"
 
 	pkgEntity "github.com/renatospaka/authorization-server/utils/entity"
@@ -45,86 +46,100 @@ func NewAuthorization(value float32) (*Authorization, error) {
 	return authorization, nil
 }
 
+// Randomically define what is the response for the authorization proceess
+// Case rand <= 30 then deny the request
+// Else approve it
+func (a *Authorization) Process() string {
+	min, max := 0, 100
+	random := rand.Intn(max-min) + min
+	if random <= 30 {
+		a.Deny()
+	} else {
+		a.Approve()
+	}
+	return a.status
+}
+
 // Get the ID of the authorization request
-func (t *Authorization) GetID() string {
-	return t.id.String()
+func (a *Authorization) GetID() string {
+	return a.id.String()
 }
 
 // Approve the authorization request
-func (t *Authorization) ApprovedIt() {
-	t.approvedAt = time.Now()
-	t.deniedAt = time.Time{}
-	t.TrailDate.SetAlterationToToday()
-	t.status = TR_APPROVED
+func (a *Authorization) Approve() {
+	a.approvedAt = time.Now()
+	a.deniedAt = time.Time{}
+	a.TrailDate.SetAlterationToToday()
+	a.status = TR_APPROVED
 }
 
 // Deny the authorization request
-func (t *Authorization) DenyIt() {
-	t.approvedAt = time.Time{}
-	t.deniedAt = time.Now()
-	t.TrailDate.SetAlterationToToday()
-	t.status = TR_DENIED
+func (a *Authorization) Deny() {
+	a.approvedAt = time.Time{}
+	a.deniedAt = time.Now()
+	a.TrailDate.SetAlterationToToday()
+	a.status = TR_DENIED
 }
 
 // Get when the authorization was denied (if it was)
-func (t *Authorization) DeniedAt() time.Time {
-	return t.deniedAt
+func (a *Authorization) DeniedAt() time.Time {
+	return a.deniedAt
 }
 
 // Delete the authorization request
-func (t *Authorization) DeleteIt() {
-	t.approvedAt = time.Time{}
-	t.deniedAt = time.Time{}
-	t.TrailDate.SetDeletionToToday()
-	t.status = TR_DELETED
+func (a *Authorization) DeleteIt() {
+	a.approvedAt = time.Time{}
+	a.deniedAt = time.Time{}
+	a.TrailDate.SetDeletionToToday()
+	a.status = TR_DELETED
 }
 
 // Get when the authorization was approved (if it was)
-func (t *Authorization) ApprovedAt() time.Time {
-	return t.approvedAt
+func (a *Authorization) ApprovedAt() time.Time {
+	return a.approvedAt
 }
 
 // Get the current status of the authorization request
-func (t *Authorization) GetStatus() string {
-	return t.status
+func (a *Authorization) GetStatus() string {
+	return a.status
 }
 
 // Get the value of the authorization
-func (t *Authorization) GetValue() float32 {
-	return t.value
+func (a *Authorization) GetValue() float32 {
+	return a.value
 }
 
 // Validates all business rules to authorize this
-func (t *Authorization) Validate() error {
-	t.valid = false
-	if t.id.String() == "" {
+func (a *Authorization) Validate() error {
+	a.valid = false
+	if a.id.String() == "" {
 		return ErrIDIsRequired
 	}
 
-	if _, err := pkgEntity.Parse(t.id.String()); err != nil {
+	if _, err := pkgEntity.Parse(a.id.String()); err != nil {
 		return ErrInvalidID
 	}
 
-	if t.value < 0 {
+	if a.value < 0 {
 		return ErrValueIsNegative
 	}
 
-	if t.value == 0 {
+	if a.value == 0 {
 		return ErrValueIsZero
 	}
 
-	if t.status != TR_APPROVED &&
-		t.status != TR_DELETED &&
-		t.status != TR_DENIED &&
-		t.status != TR_PENDING {
+	if a.status != TR_APPROVED &&
+		a.status != TR_DELETED &&
+		a.status != TR_DENIED &&
+		a.status != TR_PENDING {
 		return ErrInvalidStatus
 	}
 
-	t.valid = true
+	a.valid = true
 	return nil
 }
 
 // Return whether the structure is valid or not
-func (t *Authorization) IsValid() bool {
-	return t.valid
+func (a *Authorization) IsValid() bool {
+	return a.valid
 }
