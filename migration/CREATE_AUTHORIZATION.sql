@@ -1,5 +1,7 @@
 CREATE TABLE IF NOT EXISTS authorizations (
-  id          UUID, 
+  id                UUID, 
+  client_id         UUID, 
+  transaction_id    UUID, 
   status      varchar(15), 
   value       float, 
   approved_at timestamp, 

@@ -22,23 +22,32 @@ func NewAuthorizationUsecase(repo repository.AuthorizationInterface) *Authorizat
 func (a *AuthorizationUsecase) ProcessAuthorization(auth *dto.AuthorizationProcessDto) (*dto.AuthorizationProcessResultDto, error) {
 	log.Println("usecase.authorizations.process")
 
-	authorization, err := entity.NewAuthorization(auth.Value)
-	if err != nil {
-		return nil, err
+	response := &dto.AuthorizationProcessResultDto{
+		ClientID: auth.ClientID,
+		Value: auth.Value,
 	}
+
+	authorization, err := entity.NewAuthorization(auth.ClientID, auth.Value)
+	if err != nil {
+		response.ErrorMessage = err.Error()
+		return response, err
+	}
+	
 	authorization.Process()
+	response.ID = authorization.GetID()
+	response.Value = authorization.GetValue()
+	response.Status = authorization.GetStatus()
+	response.DeniedAt = dateTime.FormatDateToNull(authorization.DeniedAt())
+	response.ApprovedAt = dateTime.FormatDateToNull(authorization.ApprovedAt())
+	if !authorization.IsValid() {
+		response.ErrorMessage = err.Error()
+		return response, err
+	}
 
 	err = a.repo.Process(authorization)
 	if err != nil {
-		return nil, err
-	}
-
-	response := &dto.AuthorizationProcessResultDto{
-		ID:         authorization.GetID(),
-		Status:     authorization.GetStatus(),
-		Value:      authorization.GetValue(),
-		DeniedAt:   dateTime.FormatDateToNull(authorization.DeniedAt()),
-		ApprovedAt: dateTime.FormatDateToNull(authorization.ApprovedAt()),
+		response.ErrorMessage = err.Error()
+		return response, err
 	}
 	return response, nil
 }

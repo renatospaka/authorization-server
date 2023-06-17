@@ -5,12 +5,10 @@ import (
 	"database/sql"
 	"log"
 
-	grpcServer "github.com/renatospaka/authorization-server/adapter/grpc/server"
-	"github.com/renatospaka/authorization-server/adapter/grpc/service"
 	postgres "github.com/renatospaka/authorization-server/adapter/postgres"
-
-	// "github.com/renatospaka/authorization-server/adapter/rest/controller"
+	grpcServer "github.com/renatospaka/authorization-server/adapter/grpc/server"
 	"github.com/renatospaka/authorization-server/core/usecase"
+	"github.com/renatospaka/authorization-server/adapter/grpc/service"
 	"github.com/renatospaka/authorization-server/utils/configs"
 )
 
@@ -32,13 +30,13 @@ func main() {
 	}
 	defer db.Close()
 
+	log.Println("iniciando autorizador de transações")
 	repo := postgres.NewPostgresDatabase(db)
 	usecases := usecase.NewAuthorizationUsecase(repo)
 	services := service.NewAuthorizationService(usecases)
-	// webServer := httpServer.NewHttpServer(ctx, controllers)
 	grpcSrv := grpcServer.NewGrpcServer(ctx, services)
 
 	//start web server
-	log.Println("autorizador de transações escutando porta:", configs.GRPCServerPort)
-	grpcSrv.Connect( configs.GRPCServerPort)
+	log.Printf("autorizador de transações escutando porta: %s\n", configs.GRPCServerPort)
+	grpcSrv.Connect(configs.GRPCServerPort)
 }
