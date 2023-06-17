@@ -19,16 +19,23 @@ type Authorization struct {
 	deniedAt   time.Time
 	approvedAt time.Time
 	*pkgEntity.TrailDate
-	id     pkgEntity.ID
-	status string
-	value  float32
-	valid  bool
+	id       pkgEntity.ID
+	clientId pkgEntity.ID
+	status   string
+	value    float32
+	valid    bool
 }
 
 // Create a new authorization
-func NewAuthorization(value float32) (*Authorization, error) {
+func NewAuthorization(clientId string, value float32) (*Authorization, error) {
+	uuid, err := pkgEntity.Parse(clientId)
+	if err != nil {
+		return nil, ErrInvalidClientID
+	}
+
 	authorization := &Authorization{
 		id:         pkgEntity.NewID(),
+		clientId: uuid,
 		value:      value,
 		status:     TR_PENDING,
 		deniedAt:   time.Time{},
@@ -39,7 +46,7 @@ func NewAuthorization(value float32) (*Authorization, error) {
 	authorization.TrailDate.SetCreationToToday()
 
 	// deliver the new authorization validated
-	err := authorization.Validate()
+	err = authorization.Validate()
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +69,20 @@ func (a *Authorization) Process() string {
 
 // Get the ID of the authorization request
 func (a *Authorization) GetID() string {
-	return a.id.String()
+	uuid := a.id.String()
+	if uuid == "00000000-0000-0000-0000-000000000000" {
+		uuid = ""
+	}
+	return uuid
+}
+
+// Get the Client ID of the transaction
+func (a *Authorization) GetClientID() string {
+	uuid := a.clientId.String()
+	if uuid == "00000000-0000-0000-0000-000000000000" {
+		uuid = ""
+	}
+	return uuid
 }
 
 // Approve the authorization request

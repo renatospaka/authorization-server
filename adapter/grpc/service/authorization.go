@@ -23,28 +23,24 @@ func NewAuthorizationService(usecases *usecase.AuthorizationUsecase) *Authorizat
 // Process the authorization request and return to the gRPC caller
 func (a *AuthorizationService) Process(ctx context.Context, in *pb.AuthorizationRequest) (*pb.AuthorizationResponse, error) {
 	auth := &dto.AuthorizationProcessDto{
-		Value: in.Value,
+		Value:         in.Value,
+		ClientID:      in.ClientId,
+		TransactionID: in.TransactionId,
 	}
 	authResponse := &pb.AuthorizationResponse{}
 
-	result, err := a.usecases.ProcessAuthorization(auth)
-	if err != nil {
-		authResponse = &pb.AuthorizationResponse{
-			AuthorizationId: result.ID,
-			ClientId:        "",
-			TransactionId:   "",
-			Status:          result.Status,
-			Value:           float32(result.Value),
-		}
-		return authResponse, err
+	response, err := a.usecases.ProcessAuthorization(auth)
+	authResponse = &pb.AuthorizationResponse{
+		AuthorizationId: response.ID,
+		ClientId:        response.ClientID,
+		TransactionId:   response.TransactionID,
+		Status:          response.Status,
+		Value:           response.Value,
 	}
 
-	authResponse = &pb.AuthorizationResponse{
-		AuthorizationId: result.ID,
-		ClientId:        "",
-		TransactionId:   "",
-		Status:          result.Status,
-		Value:           result.Value,
+	if err != nil {
+		authResponse.ErrorMessage = response.ErrorMessage
+		return authResponse, nil
 	}
 	return authResponse, nil
 }

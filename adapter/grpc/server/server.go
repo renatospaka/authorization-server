@@ -18,8 +18,7 @@ type GrpcServer struct {
 }
 
 func NewGrpcServer(ctx context.Context, services *service.AuthorizationService) *GrpcServer {
-	log.Println("iniciando servidor gRPC")
-
+	log.Println("iniciando conexão com o servidor gRPC")
 	srv := &GrpcServer{
 		ctx: ctx,
 		services: services,

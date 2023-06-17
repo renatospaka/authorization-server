@@ -40,9 +40,9 @@ func (p *PostgresDatabase) processAuthorization(ctx context.Context, auth *entit
 
 	query := `
 	INSERT INTO authorizations
-		(id, status, value, approved_at, denied_at, created_at, updated_at, deleted_at) 
+		(id, status, client_id, value, approved_at, denied_at, created_at, updated_at, deleted_at) 
 	VALUES
-		($1, $2, $3, $4, $5, $6, $7, $8)
+		($1, $2, $3, $4, $5, $6, $7, $8, $9)
 	`
 	stmt, err := p.DB.PrepareContext(ctx, query)
 	if err != nil {
@@ -53,6 +53,7 @@ func (p *PostgresDatabase) processAuthorization(ctx context.Context, auth *entit
 	_, err = stmt.ExecContext(ctx,
 		auth.GetID(),
 		auth.GetStatus(),
+		auth.GetClientID(),
 		auth.GetValue(),
 		approvedAt,
 		deniedAt,
