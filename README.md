@@ -5,7 +5,7 @@
 - gRPC
 
 ## Standards
-<a href="https://github.com/golang-standards/project-layout">golang standards - project layout</a>
+<a href="https://github.com/golang-standards/project-layout">golang standards - project layout</a></br>
 <a href="https://github.com/uber-go/guide">Uber style guide for golang</a>
 
 # go have fun using Go
