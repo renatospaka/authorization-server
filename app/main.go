@@ -37,6 +37,6 @@ func main() {
 	grpcSrv := grpcServer.NewGrpcServer(ctx, services)
 
 	//start web server
-	log.Printf("autorizador de transações escutando porta: %s\n", configs.GRPCServerPort)
+	log.Printf("autorizador de transações escutando porta: %s\n", configs.AppServerPort)
 	grpcSrv.Connect(configs.GRPCServerPort)
 }

@@ -21,12 +21,15 @@ RUN apt-get install -y protobuf-compiler && \
     mv evans ../bin && rm -f evans_linux_amd64.tar.gz
 
 ## START A PROJECT
-RUN go mod init server
+# RUN go mod init server
 
-## COPY NECESSARY FILES
-# COPY go.mod go.sum ./
+# COPY NECESSARY FILES
+COPY go.mod go.* ./
 RUN go mod download && \
     go mod tidy
+
+# COPY THE PROJECT
+COPY . ./
 
 ## KEEP THE CONTAINER RUNNiNG
 CMD ["tail", "-f", "/dev/null"]

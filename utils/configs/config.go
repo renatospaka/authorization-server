@@ -11,7 +11,7 @@ type conf struct {
 	DBUser         string `mapstructure:"DB_USER"`
 	DBPassword     string `mapstructure:"DB_PASSWORD"`
 	DBName         string `mapstructure:"DB_NAME"`
-	WEBServerPort  string `mapstructure:"WEB_SERVER_PORT"`
+	AppServerPort  string `mapstructure:"APP_SERVER_PORT"`
 	GRPCServerPort string `mapstructure:"GRPC_SERVER_PORT"`
 	// JWTSecret      string `mapstructure:"JWT_SECRET"`
 	// JWTExpiresIn   int    `mapstructure:"JWT_EXPIRES_IN"`
