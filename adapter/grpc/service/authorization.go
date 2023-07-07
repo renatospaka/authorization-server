@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/renatospaka/authorization-server/adapter/grpc/pb"
 	"github.com/renatospaka/authorization-server/core/dto"
@@ -22,6 +23,8 @@ func NewAuthorizationService(usecases *usecase.AuthorizationUsecase) *Authorizat
 
 // Process the authorization request and return to the gRPC caller
 func (a *AuthorizationService) Process(ctx context.Context, in *pb.AuthorizationRequest) (*pb.AuthorizationResponse, error) {
+	log.Println("service.authorizations.process")
+	
 	auth := &dto.AuthorizationProcessDto{
 		Value:         in.Value,
 		ClientID:      in.ClientId,

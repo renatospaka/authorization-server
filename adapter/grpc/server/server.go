@@ -36,6 +36,8 @@ func (g *GrpcServer) Connect(port string) {
 	g.Server = grpc.NewServer()
 	pb.RegisterAuthorizationServiceServer(g.Server, g.services)
 	reflection.Register(g.Server)		// to allow Evans to test the server
+	log.Printf("servidor gRPC escutando porta: %s\n", port)
+
 	if err := g.Server.Serve(lis); err != nil {
 		log.Panic(err)
 	}

@@ -19,29 +19,36 @@ type Authorization struct {
 	deniedAt   time.Time
 	approvedAt time.Time
 	*pkgEntity.TrailDate
-	id       pkgEntity.ID
-	clientId pkgEntity.ID
-	status   string
-	value    float32
-	valid    bool
+	id            pkgEntity.ID
+	clientId      pkgEntity.ID
+	transactionId pkgEntity.ID
+	status        string
+	value         float32
+	valid         bool
 }
 
 // Create a new authorization
-func NewAuthorization(clientId string, value float32) (*Authorization, error) {
-	uuid, err := pkgEntity.Parse(clientId)
+func NewAuthorization(clientId string, transactionId string, value float32) (*Authorization, error) {
+	clientUuid, err := pkgEntity.Parse(clientId)
 	if err != nil {
 		return nil, ErrInvalidClientID
 	}
 
+	transactionUuid, err := pkgEntity.Parse(transactionId)
+	if err != nil {
+		return nil, ErrInvalidTransactionID
+	}
+
 	authorization := &Authorization{
-		id:         pkgEntity.NewID(),
-		clientId: uuid,
-		value:      value,
-		status:     TR_PENDING,
-		deniedAt:   time.Time{},
-		approvedAt: time.Time{},
-		TrailDate:  &pkgEntity.TrailDate{},
-		valid:      false,
+		id:            pkgEntity.NewID(),
+		clientId:      clientUuid,
+		transactionId: transactionUuid,
+		value:         value,
+		status:        TR_PENDING,
+		deniedAt:      time.Time{},
+		approvedAt:    time.Time{},
+		TrailDate:     &pkgEntity.TrailDate{},
+		valid:         false,
 	}
 	authorization.TrailDate.SetCreationToToday()
 
@@ -85,10 +92,20 @@ func (a *Authorization) GetClientID() string {
 	return uuid
 }
 
+// Get the Transaction ID of the transaction
+func (a *Authorization) GetTransactionID() string {
+	uuid := a.transactionId.String()
+	if uuid == "00000000-0000-0000-0000-000000000000" {
+		uuid = ""
+	}
+	return uuid
+}
+
 // Approve the authorization request
 func (a *Authorization) Approve() {
 	a.approvedAt = time.Now()
 	a.deniedAt = time.Time{}
+	a.receivedAt = time.Now()
 	a.TrailDate.SetAlterationToToday()
 	a.status = TR_APPROVED
 }
@@ -97,6 +114,7 @@ func (a *Authorization) Approve() {
 func (a *Authorization) Deny() {
 	a.approvedAt = time.Time{}
 	a.deniedAt = time.Now()
+	a.receivedAt = time.Now()
 	a.TrailDate.SetAlterationToToday()
 	a.status = TR_DENIED
 }
@@ -117,6 +135,11 @@ func (a *Authorization) DeleteIt() {
 // Get when the authorization was approved (if it was)
 func (a *Authorization) ApprovedAt() time.Time {
 	return a.approvedAt
+}
+
+// Get when the authorization was receeived (if it was)
+func (a *Authorization) ReceivedAt() time.Time {
+	return a.receivedAt
 }
 
 // Get the current status of the authorization request

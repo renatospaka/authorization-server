@@ -9,14 +9,16 @@ import (
 
 const (
 	CLIENT_ID        = "ebf77a6e-e236-441a-8ef6-4a3afdc5d4b1"
+	TRANSACTION_ID   = "ebf77a6e-e236-441a-8ef6-4a3afdc5d4b1"
 )
 
 func TestNewAuthorization(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, 200.00)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, 200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.NotEmpty(t, auth.GetID())
 	assert.Equal(t, CLIENT_ID, auth.GetClientID())
+	assert.Equal(t, TRANSACTION_ID, auth.GetTransactionID())
 	assert.Equal(t, float32(200.00), auth.GetValue())
 	assert.True(t, auth.DeniedAt().IsZero())
 	assert.True(t, auth.ApprovedAt().IsZero())
@@ -26,34 +28,46 @@ func TestNewAuthorization(t *testing.T) {
 	assert.Nil(t, err)
 }
 
-func TestNewAuthorizationInvalidlientID(t *testing.T) {
-	auth, err := entity.NewAuthorization("X"+CLIENT_ID, 0)
+func TestNewAuthorizationInvalidClientID(t *testing.T) {
+	auth, err := entity.NewAuthorization("X"+CLIENT_ID, TRANSACTION_ID, 0)
 	assert.NotNil(t, err)
 	assert.Nil(t, auth)
 	assert.EqualError(t, err, entity.ErrInvalidClientID.Error())
 
-	auth2, err2 := entity.NewAuthorization("", 0)
+	auth2, err2 := entity.NewAuthorization("", TRANSACTION_ID, 0)
 	assert.NotNil(t, err2)
 	assert.Nil(t, auth2)
 	assert.EqualError(t, err2, entity.ErrInvalidClientID.Error())
 }
 
+func TestNewAuthorizationInvalidTransactionID(t *testing.T) {
+	auth, err := entity.NewAuthorization(CLIENT_ID, "X"+TRANSACTION_ID, 0)
+	assert.NotNil(t, err)
+	assert.Nil(t, auth)
+	assert.EqualError(t, err, entity.ErrInvalidTransactionID.Error())
+
+	auth2, err2 := entity.NewAuthorization(CLIENT_ID, "", 0)
+	assert.NotNil(t, err2)
+	assert.Nil(t, auth2)
+	assert.EqualError(t, err2, entity.ErrInvalidTransactionID.Error())
+}
+
 func TestNewAuthorizationValueIsZero(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, 0)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, 0)
 	assert.NotNil(t, err)
 	assert.Nil(t, auth)
 	assert.EqualError(t, err, entity.ErrValueIsZero.Error())
 }
 
 func TestNewAuthorizationValueIsNegative(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, -200.00)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, -200.00)
 	assert.NotNil(t, err)
 	assert.Nil(t, auth)
 	assert.EqualError(t, err, entity.ErrValueIsNegative.Error())
 }
 
 func TestApprove(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, 200.00)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, 200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.Equal(t, entity.TR_PENDING, auth.GetStatus())
@@ -67,7 +81,7 @@ func TestApprove(t *testing.T) {
 }
 
 func TestDeny(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, 200.00)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, 200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.Equal(t, entity.TR_PENDING, auth.GetStatus())
@@ -81,7 +95,7 @@ func TestDeny(t *testing.T) {
 }
 
 func TestDeleteIt(t *testing.T) {
-	auth, err := entity.NewAuthorization(CLIENT_ID, 200.00)
+	auth, err := entity.NewAuthorization(CLIENT_ID, TRANSACTION_ID, 200.00)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.Equal(t, entity.TR_PENDING, auth.GetStatus())
