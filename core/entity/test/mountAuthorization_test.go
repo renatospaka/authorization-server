@@ -10,6 +10,7 @@ import (
 func TestMountAuthorization(t *testing.T) {
 	authData = getTestData()
 	auth, err := entity.MountAuthorization(authData)
+	assert.ObjectsAreEqual(&entity.Authorization{}, auth)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.NotEmpty(t, auth.GetID())

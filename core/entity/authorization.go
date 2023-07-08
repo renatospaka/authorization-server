@@ -65,7 +65,7 @@ func NewAuthorization(clientId string, transactionId string, value float32) (*Au
 func (a *Authorization) Process() string {
 	min, max := 0, 100
 	random := rand.Intn(max-min) + min
-	if random <= 21 {
+	if random <= 20 {
 		a.Deny()
 	} else {
 		a.Approve()

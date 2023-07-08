@@ -13,5 +13,5 @@ var (
 	ErrValueIsNegative           = errors.New("value must be positive")
 	ErrValueIsZero               = errors.New("value must be greater than zero")
 	ErrInvalidStatus             = errors.New("invalid status")
-	ErrCannotReprocess           = errors.New("authorization cannot be reprocess, invalid status")
+	ErrCannotReprocess           = errors.New("authorization cannot be reprocessed, status not allowed")
 )

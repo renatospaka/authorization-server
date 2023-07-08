@@ -9,6 +9,7 @@ import (
 
 func TestNewAuthorization(t *testing.T) {
 	auth, err := entity.NewAuthorization(c_CLIENT_ID, c_TRANSACTION_ID, 200.00)
+	assert.ObjectsAreEqual(&entity.Authorization{}, auth)
 	assert.Nil(t, err)
 	assert.NotNil(t, auth)
 	assert.NotEmpty(t, auth.GetID())
@@ -114,4 +115,62 @@ func TestDeleteIt(t *testing.T) {
 	assert.True(t, auth.DeniedAt().IsZero())
 	assert.True(t, auth.ApprovedAt().IsZero())
 	assert.False(t, auth.TrailDate.DeletedAt().IsZero())
+}
+
+func TestProcess(t *testing.T) {
+	auth, _ := entity.NewAuthorization(c_CLIENT_ID, c_TRANSACTION_ID, 200.00)
+	assert.NotNil(t, auth)
+	
+	deny, approve, other := 0, 0, 0
+	for i := 0; i < 10000; i++ {
+		auth.Process()
+		status := auth.GetStatus()
+		if status == entity.TR_APPROVED {
+			approve++
+		} else if status == entity.TR_DENIED {
+			deny++
+		} else {
+			other++
+		}
+	}
+	denyP := float32(deny) / 10000.00 * 100.00
+	approveP := float32(approve) / 10000.00 * 100.00
+
+	assert.EqualValues(t, 0, other)
+	assert.GreaterOrEqual(t, approveP, float32(75.0))
+	assert.LessOrEqual(t, denyP, float32(25.0))
+}
+
+func TestReprocess(t *testing.T) {
+	auth, _ := entity.NewAuthorization(c_CLIENT_ID, c_TRANSACTION_ID, 200.00)
+	assert.NotNil(t, auth)
+
+	status := auth.GetStatus()
+	assert.Equal(t, entity.TR_PENDING, status)
+
+	newStatus, err := auth.Reprocess()
+	assert.Nil(t, err)
+	assert.NotEmpty(t, newStatus)
+	assert.Condition(t, func() bool {
+		if newStatus == entity.TR_DENIED {return true}
+		if newStatus == entity.TR_APPROVED {return true}
+		return false
+	})
+}
+
+func TestReprocessCannotReprocess(t *testing.T) {
+	auth, _ := entity.NewAuthorization(c_CLIENT_ID, c_TRANSACTION_ID, 200.00)
+	assert.NotNil(t, auth)
+
+	status := auth.Process()
+	assert.NotEmpty(t, status)
+	assert.Condition(t, func() bool {
+		if status == entity.TR_DENIED {return true}
+		if status == entity.TR_APPROVED {return true}
+		return false
+	})
+
+	status, err := auth.Reprocess()
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, entity.ErrCannotReprocess.Error())
 }
