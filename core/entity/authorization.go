@@ -61,17 +61,26 @@ func NewAuthorization(clientId string, transactionId string, value float32) (*Au
 }
 
 // Randomically define what is the response for the authorization proceess
-// Case rand <= 30 then deny the request
-// Else approve it
+// 21% of the authorizations should be denied
 func (a *Authorization) Process() string {
 	min, max := 0, 100
 	random := rand.Intn(max-min) + min
-	if random <= 30 {
+	if random <= 21 {
 		a.Deny()
 	} else {
 		a.Approve()
 	}
 	return a.status
+}
+
+// Use the same algorithm of Process
+// but validates status before processing -  
+// only pending authorizations can be reprocessed
+func (a *Authorization) Reprocess() string {
+	if a.status != TR_PENDING {
+		return a.status
+	}
+	return a.Process()
 }
 
 // Get the ID of the authorization request
