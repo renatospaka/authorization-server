@@ -47,7 +47,7 @@ func (p *PostgresDatabase) findAuthorizationById(ctx context.Context, id string)
 	err = rows.Scan(&authorization_id, &transaction_id, &client_id, &status, &approved_at, &denied_at, &value, &created_at, &updated_at, &deleted_at)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, nil
+			return nil, entity.ErrAuthorizationIDNotFound
 		}
 		return nil, err
 	}

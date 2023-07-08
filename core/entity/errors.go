@@ -5,6 +5,7 @@ import "errors"
 var (
 	ErrAuthorizationIDIsRequired = errors.New("authorization id is required")
 	ErrInvalidAuthorizationID    = errors.New("invalid authorization id")
+	ErrAuthorizationIDNotFound   = errors.New("authorization not found")
 	ErrClientIDIsRequired        = errors.New("client id is required")
 	ErrInvalidClientID           = errors.New("invalid client id")
 	ErrTransactionIDIsRequired   = errors.New("transaction id is required")
