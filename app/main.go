@@ -8,7 +8,7 @@ import (
 	postgres "github.com/renatospaka/authorization-server/adapter/postgres"
 	grpcServer "github.com/renatospaka/authorization-server/adapter/grpc/server"
 	"github.com/renatospaka/authorization-server/core/usecase"
-	"github.com/renatospaka/authorization-server/adapter/grpc/service"
+	"github.com/renatospaka/authorization-server/core/service"
 	"github.com/renatospaka/authorization-server/utils/configs"
 )
 

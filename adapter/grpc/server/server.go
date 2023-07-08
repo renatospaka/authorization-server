@@ -5,10 +5,10 @@ import (
 	"log"
 	"net"
 
-	"github.com/renatospaka/authorization-server/adapter/grpc/pb"
-	"github.com/renatospaka/authorization-server/adapter/grpc/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"github.com/renatospaka/authorization-server/adapter/grpc/pb"
+	"github.com/renatospaka/authorization-server/core/service"
 )
 
 type GrpcServer struct {
