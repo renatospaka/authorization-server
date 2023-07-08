@@ -31,21 +31,21 @@ func TestMountAuthorizationInvalidAuthorizationID(t *testing.T) {
 	auth, err := entity.MountAuthorization(authData)
 	assert.NotNil(t, err)
 	assert.Nil(t, auth)
-	assert.EqualError(t, err, entity.ErrInvalidID.Error())
+	assert.EqualError(t, err, entity.ErrInvalidAuthorizationID.Error())
 	
 	authData = getTestData()
 	authData.ID = ""
 	auth2, err2 := entity.MountAuthorization(authData)
 	assert.NotNil(t, err2)
 	assert.Nil(t, auth2)
-	assert.EqualError(t, err2, entity.ErrInvalidID.Error())
+	assert.EqualError(t, err2, entity.ErrInvalidAuthorizationID.Error())
 	
 	authData = getTestData()
 	authData.ID = c_AUTHORIZATION_ID_FAKE
 	auth3, err3 := entity.MountAuthorization(authData)
 	assert.NotNil(t, err3)
 	assert.Nil(t, auth3)
-	assert.EqualError(t, err3, entity.ErrIDIsRequired.Error())
+	assert.EqualError(t, err3, entity.ErrAuthorizationIDIsRequired.Error())
 }
 
 func TestMountAuthorizationInvalidTransactionID(t *testing.T) {

@@ -193,12 +193,12 @@ func (a *Authorization) validateTransactionAndClient() error {
 // Validates all business rules to authorize this
 func (a *Authorization) Validate() error {
 	a.valid = false
-	if a.id.String() == "" || a.id.String() == "00000000-0000-0000-0000-000000000000"  {
-		return ErrIDIsRequired
+	if a.id.String() == "" || a.id.String() == "00000000-0000-0000-0000-000000000000" {
+		return ErrAuthorizationIDIsRequired
 	}
 
 	if _, err := pkgEntity.Parse(a.id.String()); err != nil {
-		return ErrInvalidID
+		return ErrInvalidAuthorizationID
 	}
 
 	if err := a.validateTransactionAndClient(); err != nil {

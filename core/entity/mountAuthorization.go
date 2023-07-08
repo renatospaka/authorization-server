@@ -23,7 +23,7 @@ type AuthorizationExisting struct {
 func MountAuthorization(auth *AuthorizationExisting) (*Authorization, error) {
 	authorizationUuid, err := pkgEntity.Parse(auth.ID)
 	if err != nil {
-		return nil, ErrInvalidID
+		return nil, ErrInvalidAuthorizationID
 	}
 
 	clientUuid, err := pkgEntity.Parse(auth.ClientId)
