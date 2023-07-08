@@ -73,14 +73,13 @@ func (a *Authorization) Process() string {
 	return a.status
 }
 
-// Use the same algorithm of Process
-// but validates status before processing -  
+// Use the same algorithm of Process validating status before processing, 
 // only pending authorizations can be reprocessed
-func (a *Authorization) Reprocess() string {
+func (a *Authorization) Reprocess() (string, error) {
 	if a.status != TR_PENDING {
-		return a.status
+		return a.status, ErrCannotReprocess
 	}
-	return a.Process()
+	return a.Process(), nil
 }
 
 // Get the ID of the authorization request
@@ -111,21 +110,34 @@ func (a *Authorization) GetTransactionID() string {
 }
 
 // Approve the authorization request
-func (a *Authorization) Approve() {
+func (a *Authorization) Approve() error {
+	if err := a.validateTransactionAndClient(); err != nil {
+		return err
+	}
 	a.approvedAt = time.Now()
 	a.deniedAt = time.Time{}
 	a.receivedAt = time.Now()
 	a.TrailDate.SetAlterationToToday()
 	a.status = TR_APPROVED
+	return nil
+}
+
+// Get when the authorization was approved (if it was)
+func (a *Authorization) ApprovedAt() time.Time {
+	return a.approvedAt
 }
 
 // Deny the authorization request
-func (a *Authorization) Deny() {
+func (a *Authorization) Deny() error {
+	if err := a.validateTransactionAndClient(); err != nil {
+		return err
+	}
 	a.approvedAt = time.Time{}
 	a.deniedAt = time.Now()
 	a.receivedAt = time.Now()
 	a.TrailDate.SetAlterationToToday()
 	a.status = TR_DENIED
+	return nil
 }
 
 // Get when the authorization was denied (if it was)
@@ -139,11 +151,6 @@ func (a *Authorization) DeleteIt() {
 	a.deniedAt = time.Time{}
 	a.TrailDate.SetDeletionToToday()
 	a.status = TR_DELETED
-}
-
-// Get when the authorization was approved (if it was)
-func (a *Authorization) ApprovedAt() time.Time {
-	return a.approvedAt
 }
 
 // Get when the authorization was receeived (if it was)
@@ -161,15 +168,41 @@ func (a *Authorization) GetValue() float32 {
 	return a.value
 }
 
+// Validate if there are one transaction id and one client id for this authorization
+// Return an error case miss one of them
+func (a *Authorization) validateTransactionAndClient() error {
+	if a.transactionId.String() == "" ||  a.transactionId.String() == "00000000-0000-0000-0000-000000000000" {
+		return ErrTransactionIDIsRequired
+	}
+
+	if _, err := pkgEntity.Parse(a.transactionId.String()); err != nil {
+		return ErrInvalidTransactionID
+	}
+
+	if a.clientId.String() == "" || a.clientId.String() == "00000000-0000-0000-0000-000000000000" {
+		return ErrClientIDIsRequired
+	}
+
+	if _, err := pkgEntity.Parse(a.clientId.String()); err != nil {
+		return ErrInvalidClientID
+	}
+
+	return nil
+}
+
 // Validates all business rules to authorize this
 func (a *Authorization) Validate() error {
 	a.valid = false
-	if a.id.String() == "" {
+	if a.id.String() == "" || a.id.String() == "00000000-0000-0000-0000-000000000000"  {
 		return ErrIDIsRequired
 	}
 
 	if _, err := pkgEntity.Parse(a.id.String()); err != nil {
 		return ErrInvalidID
+	}
+
+	if err := a.validateTransactionAndClient(); err != nil {
+		return err
 	}
 
 	if a.value < 0 {
