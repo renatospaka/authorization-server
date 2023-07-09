@@ -13,13 +13,14 @@ func (a *AuthorizationService) Reprocess(ctx context.Context, in *pb.Authorizati
 	log.Println("service.authorizations.reprocess")
 
 	auth := &dto.AuthorizationReprocessDto{
-		Value:         in.Value,
-		ClientID:      in.ClientId,
-		TransactionID: in.TransactionId,
+		AuthorizationID: in.AuthorizationId,
+		ClientID:        in.ClientId,
+		TransactionID:   in.TransactionId,
+		Value:           in.Value,
 	}
 	authResponse := &pb.AuthorizationReprocessResponse{}
 
-	response, err := a.usecases.ReprocessAuthorization(auth)
+	response, err := a.usecases.ReprocessPendingAuthorization(auth)
 	authResponse = &pb.AuthorizationReprocessResponse{
 		AuthorizationId: response.AuthorizationID,
 		ClientId:        response.ClientID,

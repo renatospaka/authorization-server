@@ -29,7 +29,17 @@ func (p *PostgresDatabase) Process(auth *entity.Authorization) error {
 	return p.processAuthorization(ctx, auth)
 }
 
+// Persists whatever happens during the process in the database
+func (p *PostgresDatabase) Reprocess(auth *entity.Authorization) error {
+	return p.reprocessAuthorization(ctx, auth)
+}
+
 // Finds a specific authorization by it id
 func (p *PostgresDatabase) FindById(id string) (*entity.Authorization, error) {
 	return p.findAuthorizationById(ctx, id)
+}
+
+// Finds a specific transaction by it id
+func (p *PostgresDatabase) FindTransactionById(transactionid string) (*entity.Authorization, error) {
+	return p.findTransationById(ctx, transactionid)
 }
