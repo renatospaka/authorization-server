@@ -8,8 +8,8 @@ import (
 	"github.com/renatospaka/authorization-server/utils/dateTime"
 )
 
-func (a *AuthorizationUsecase) ProcessAuthorization(auth *dto.AuthorizationProcessDto) (*dto.AuthorizationProcessResultDto, error) {
-	log.Println("usecase.authorizations.processAuthorization")
+func (a *AuthorizationUsecase) ProcessNewAuthorization(auth *dto.AuthorizationProcessDto) (*dto.AuthorizationProcessResultDto, error) {
+	log.Println("usecase.authorizations.processNewAuthorization")
 
 	response := &dto.AuthorizationProcessResultDto{
 		ClientID: auth.ClientID,
@@ -19,6 +19,7 @@ func (a *AuthorizationUsecase) ProcessAuthorization(auth *dto.AuthorizationProce
 
 	authorization, err := entity.NewAuthorization(auth.ClientID, auth.TransactionID, auth.Value)
 	if err != nil {
+		response.ID = ""
 		response.ErrorMessage = err.Error()
 		return response, err
 	}
@@ -32,8 +33,22 @@ func (a *AuthorizationUsecase) ProcessAuthorization(auth *dto.AuthorizationProce
 		response.ErrorMessage = err.Error()
 		return response, err
 	}
+
+	_, err = a.repo.FindTransactionById(auth.TransactionID)
+	// The transaction already existis in the database and that cannot happen
+	if err == nil {
+		response.ID = ""
+		response.ErrorMessage = entity.ErrTransactionIDAlreadyInUse.Error()
+		return response, entity.ErrTransactionIDAlreadyInUse
+	}
+	// that's OK not founding the transaction, however, if it is another erro, then...
+	if err != entity.ErrAuthorizationIDNotFound {
+		response.ID = ""
+		response.ErrorMessage = err.Error()
+		return response, err
+	}
 	
-	err = a.repo.Process(authorization)
+	err = a.repo.SaveProcessNewAuthorization(authorization)
 	if err != nil {
 		response.ErrorMessage = err.Error()
 		return response, err

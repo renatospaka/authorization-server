@@ -4,13 +4,13 @@ package authorization;
 
 option go_package = ".;pb";
 
-message AuthorizationProcessRequest {
+message AuthorizationProcessNewRequest {
   string client_id = 1;
   string transaction_id = 2;
   float value = 3;
 }
 
-message AuthorizationProcessResponse {
+message AuthorizationProcessNewResponse {
   string authorization_id = 1;
   string client_id = 2;
   string transaction_id = 3;
