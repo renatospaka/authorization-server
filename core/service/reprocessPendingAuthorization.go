@@ -9,19 +9,18 @@ import (
 )
 
 // Reprocess an existing authorization request and return to the gRPC caller
-func (a *AuthorizationService) Reprocess(ctx context.Context, in *pb.AuthorizationReprocessRequest) (*pb.AuthorizationReprocessResponse, error) {
-	log.Println("service.authorizations.reprocess")
+func (a *AuthorizationService) ReprocessPendingAuthorization(ctx context.Context, in *pb.AuthorizationReprocessPendingRequest) (*pb.AuthorizationReprocessPendingResponse, error) {
+	log.Println("service.authorizations.reprocessPendingAuthorization")
 
-	auth := &dto.AuthorizationReprocessDto{
-		AuthorizationID: in.AuthorizationId,
+	auth := &dto.AuthorizationReprocessPendingDto{
 		ClientID:        in.ClientId,
 		TransactionID:   in.TransactionId,
 		Value:           in.Value,
 	}
-	authResponse := &pb.AuthorizationReprocessResponse{}
+	authResponse := &pb.AuthorizationReprocessPendingResponse{}
 
 	response, err := a.usecases.ReprocessPendingAuthorization(auth)
-	authResponse = &pb.AuthorizationReprocessResponse{
+	authResponse = &pb.AuthorizationReprocessPendingResponse{
 		AuthorizationId: response.AuthorizationID,
 		ClientId:        response.ClientID,
 		TransactionId:   response.TransactionID,

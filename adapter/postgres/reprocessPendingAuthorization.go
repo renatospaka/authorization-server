@@ -7,8 +7,8 @@ import (
 	"github.com/renatospaka/authorization-server/core/entity"
 )
 
-func (p *PostgresDatabase) reprocessAuthorization(ctx context.Context, auth *entity.Authorization) error {
-	log.Println("repository.authorizations.reprocessAuthorization")
+func (p *PostgresDatabase) reprocessPendingAuthorization(ctx context.Context, auth *entity.Authorization) error {
+	log.Println("repository.authorizations.reprocessPendingAuthorization")
 
 	approvedAt := formatDateToSQL(auth.ApprovedAt())
 	deniedAt := formatDateToSQL(auth.DeniedAt())
