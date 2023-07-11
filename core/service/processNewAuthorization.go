@@ -9,18 +9,18 @@ import (
 )
 
 // Process the authorization request and return to the gRPC caller
-func (a *AuthorizationService) Process(ctx context.Context, in *pb.AuthorizationProcessRequest) (*pb.AuthorizationProcessResponse, error) {
-	log.Println("service.authorizations.process")
+func (a *AuthorizationService) ProcessNewAuthorization(ctx context.Context, in *pb.AuthorizationProcessNewRequest) (*pb.AuthorizationProcessNewResponse, error) {
+	log.Println("service.authorizations.processNewAuthorization")
 
 	auth := &dto.AuthorizationProcessDto{
 		Value:         in.Value,
 		ClientID:      in.ClientId,
 		TransactionID: in.TransactionId,
 	}
-	authResponse := &pb.AuthorizationProcessResponse{}
+	authResponse := &pb.AuthorizationProcessNewResponse{}
 
-	response, err := a.usecases.ProcessAuthorization(auth)
-	authResponse = &pb.AuthorizationProcessResponse{
+	response, err := a.usecases.ProcessNewAuthorization(auth)
+	authResponse = &pb.AuthorizationProcessNewResponse{
 		AuthorizationId: response.ID,
 		ClientId:        response.ClientID,
 		TransactionId:   response.TransactionID,

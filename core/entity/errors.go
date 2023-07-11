@@ -9,6 +9,7 @@ var (
 	ErrClientIDIsRequired        = errors.New("client id is required")
 	ErrInvalidClientID           = errors.New("invalid client id")
 	ErrTransactionIDIsRequired   = errors.New("transaction id is required")
+	ErrTransactionIDAlreadyInUse = errors.New("transaction id already in use")
 	ErrInvalidTransactionID      = errors.New("invalid transaction id")
 	ErrValueIsNegative           = errors.New("value must be positive")
 	ErrValueIsZero               = errors.New("value must be greater than zero")

@@ -4,10 +4,10 @@ package authorization;
 
 option go_package = ".;pb";
 
-import "process.proto";
+import "processNewAuthorization.proto";
 import "reprocessPendingAuthorization.proto";
 
 service AuthorizationService {
-  rpc Process(AuthorizationProcessRequest) returns (AuthorizationProcessResponse);
+  rpc ProcessNewAuthorization(AuthorizationProcessNewRequest) returns (AuthorizationProcessNewResponse);
   rpc ReprocessPendingAuthorization(AuthorizationReprocessPendingRequest) returns (AuthorizationReprocessPendingResponse);
 }

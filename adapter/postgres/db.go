@@ -24,12 +24,12 @@ func NewPostgresDatabase(db *sql.DB) *PostgresDatabase {
 }
 
 
-// Persists whatever happens during the process in the database
-func (p *PostgresDatabase) Process(auth *entity.Authorization) error {
-	return p.processAuthorization(ctx, auth)
+// Persists new transaction's authorization into the database
+func (p *PostgresDatabase) SaveProcessNewAuthorization(auth *entity.Authorization) error {
+	return p.processNewAuthorization(ctx, auth)
 }
 
-// Persists whatever happens during the process in the database
+// Persists reprocessed pending transaction's authorization into the database
 func (p *PostgresDatabase) SaveReprocessPendingAuthorization(auth *entity.Authorization) error {
 	return p.reprocessPendingAuthorization(ctx, auth)
 }
