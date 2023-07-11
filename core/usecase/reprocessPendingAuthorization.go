@@ -8,14 +8,13 @@ import (
 	"github.com/renatospaka/authorization-server/utils/dateTime"
 )
 
-// Reprocess a Transaction Process request.
+// Reprocess an Authorization for Transaction request.
 // By default, the transaction cannot be approved nor denied, thus, there must not be an Authorization
 // Status of the authorization, if any, MUST BE "pending"
-func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.AuthorizationReprocessDto) (*dto.AuthorizationReprocessResultDto, error) {
+func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.AuthorizationReprocessPendingDto) (*dto.AuthorizationReprocessPendingResultDto, error) {
 	log.Println("usecase.authorizations.reprocessPendingAuthorization")
 
-	response := &dto.AuthorizationReprocessResultDto{
-		AuthorizationID: auth.AuthorizationID,
+	response := &dto.AuthorizationReprocessPendingResultDto{
 		ClientID:        auth.ClientID,
 		TransactionID:   auth.TransactionID,
 		Value:           auth.Value,
@@ -28,14 +27,20 @@ func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.Authoriza
 		return response, err
 	}
 
-	if auth.AuthorizationID != authorization.GetID() {
-		err = errors.New("authorization cannot be reprocessed, authorization id of the request does not match with existing")
+	// if auth.AuthorizationID != authorization.GetID() {
+	// 	err = errors.New("authorization cannot be reprocessed, authorization id of the request does not match with existing")
+	// 	response.ErrorMessage = err.Error()
+	// 	return response, err
+	// }
+
+	if auth.ClientID != authorization.GetClientID() {
+		err = errors.New("authorization cannot be reprocessed, client id of the request does not match with existing")
 		response.ErrorMessage = err.Error()
 		return response, err
 	}
 
-	if auth.ClientID != authorization.GetClientID() {
-		err = errors.New("authorization cannot be reprocessed, client id of the request does not match with existing")
+	if auth.Value != authorization.GetValue() {
+		err = errors.New("authorization cannot be reprocessed, value of the request does not match with existing")
 		response.ErrorMessage = err.Error()
 		return response, err
 	}
@@ -55,7 +60,7 @@ func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.Authoriza
 		return response, err
 	}
 
-	err = a.repo.Reprocess(authorization)
+	err = a.repo.SaveReprocessPendingAuthorization(authorization)
 	if err != nil {
 		response.ErrorMessage = err.Error()
 		return response, err

@@ -30,8 +30,8 @@ func (p *PostgresDatabase) Process(auth *entity.Authorization) error {
 }
 
 // Persists whatever happens during the process in the database
-func (p *PostgresDatabase) Reprocess(auth *entity.Authorization) error {
-	return p.reprocessAuthorization(ctx, auth)
+func (p *PostgresDatabase) SaveReprocessPendingAuthorization(auth *entity.Authorization) error {
+	return p.reprocessPendingAuthorization(ctx, auth)
 }
 
 // Finds a specific authorization by it id

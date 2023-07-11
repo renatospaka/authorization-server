@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthorizationServiceClient interface {
 	Process(ctx context.Context, in *AuthorizationProcessRequest, opts ...grpc.CallOption) (*AuthorizationProcessResponse, error)
-	Reprocess(ctx context.Context, in *AuthorizationReprocessRequest, opts ...grpc.CallOption) (*AuthorizationReprocessResponse, error)
+	ReprocessPendingAuthorization(ctx context.Context, in *AuthorizationReprocessPendingRequest, opts ...grpc.CallOption) (*AuthorizationReprocessPendingResponse, error)
 }
 
 type authorizationServiceClient struct {
@@ -43,9 +43,9 @@ func (c *authorizationServiceClient) Process(ctx context.Context, in *Authorizat
 	return out, nil
 }
 
-func (c *authorizationServiceClient) Reprocess(ctx context.Context, in *AuthorizationReprocessRequest, opts ...grpc.CallOption) (*AuthorizationReprocessResponse, error) {
-	out := new(AuthorizationReprocessResponse)
-	err := c.cc.Invoke(ctx, "/authorization.AuthorizationService/Reprocess", in, out, opts...)
+func (c *authorizationServiceClient) ReprocessPendingAuthorization(ctx context.Context, in *AuthorizationReprocessPendingRequest, opts ...grpc.CallOption) (*AuthorizationReprocessPendingResponse, error) {
+	out := new(AuthorizationReprocessPendingResponse)
+	err := c.cc.Invoke(ctx, "/authorization.AuthorizationService/ReprocessPendingAuthorization", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *authorizationServiceClient) Reprocess(ctx context.Context, in *Authoriz
 // for forward compatibility
 type AuthorizationServiceServer interface {
 	Process(context.Context, *AuthorizationProcessRequest) (*AuthorizationProcessResponse, error)
-	Reprocess(context.Context, *AuthorizationReprocessRequest) (*AuthorizationReprocessResponse, error)
+	ReprocessPendingAuthorization(context.Context, *AuthorizationReprocessPendingRequest) (*AuthorizationReprocessPendingResponse, error)
 	mustEmbedUnimplementedAuthorizationServiceServer()
 }
 
@@ -68,8 +68,8 @@ type UnimplementedAuthorizationServiceServer struct {
 func (UnimplementedAuthorizationServiceServer) Process(context.Context, *AuthorizationProcessRequest) (*AuthorizationProcessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Process not implemented")
 }
-func (UnimplementedAuthorizationServiceServer) Reprocess(context.Context, *AuthorizationReprocessRequest) (*AuthorizationReprocessResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Reprocess not implemented")
+func (UnimplementedAuthorizationServiceServer) ReprocessPendingAuthorization(context.Context, *AuthorizationReprocessPendingRequest) (*AuthorizationReprocessPendingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReprocessPendingAuthorization not implemented")
 }
 func (UnimplementedAuthorizationServiceServer) mustEmbedUnimplementedAuthorizationServiceServer() {}
 
@@ -102,20 +102,20 @@ func _AuthorizationService_Process_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthorizationService_Reprocess_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthorizationReprocessRequest)
+func _AuthorizationService_ReprocessPendingAuthorization_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthorizationReprocessPendingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthorizationServiceServer).Reprocess(ctx, in)
+		return srv.(AuthorizationServiceServer).ReprocessPendingAuthorization(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/authorization.AuthorizationService/Reprocess",
+		FullMethod: "/authorization.AuthorizationService/ReprocessPendingAuthorization",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthorizationServiceServer).Reprocess(ctx, req.(*AuthorizationReprocessRequest))
+		return srv.(AuthorizationServiceServer).ReprocessPendingAuthorization(ctx, req.(*AuthorizationReprocessPendingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -132,8 +132,8 @@ var AuthorizationService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthorizationService_Process_Handler,
 		},
 		{
-			MethodName: "Reprocess",
-			Handler:    _AuthorizationService_Reprocess_Handler,
+			MethodName: "ReprocessPendingAuthorization",
+			Handler:    _AuthorizationService_ReprocessPendingAuthorization_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
