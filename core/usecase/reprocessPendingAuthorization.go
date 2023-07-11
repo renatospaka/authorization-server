@@ -27,12 +27,6 @@ func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.Authoriza
 		return response, err
 	}
 
-	// if auth.AuthorizationID != authorization.GetID() {
-	// 	err = errors.New("authorization cannot be reprocessed, authorization id of the request does not match with existing")
-	// 	response.ErrorMessage = err.Error()
-	// 	return response, err
-	// }
-
 	if auth.ClientID != authorization.GetClientID() {
 		err = errors.New("authorization cannot be reprocessed, client id of the request does not match with existing")
 		response.ErrorMessage = err.Error()
@@ -52,6 +46,7 @@ func (a *AuthorizationUsecase) ReprocessPendingAuthorization(auth *dto.Authoriza
 		return response, err
 	}
 
+	response.AuthorizationID = authorization.GetID()
 	response.Status = newStatus
 	response.DeniedAt = dateTime.FormatDateToNull(authorization.DeniedAt())
 	response.ApprovedAt = dateTime.FormatDateToNull(authorization.ApprovedAt())
