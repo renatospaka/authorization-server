@@ -13,17 +13,17 @@ func (a *AuthorizationService) ProcessNewAuthorization(ctx context.Context, in *
 	log.Println("service.authorizations.processNewAuthorization")
 
 	auth := &dto.AuthorizationProcessDto{
-		Value:         in.Value,
-		ClientID:      in.ClientId,
 		TransactionID: in.TransactionId,
+		ClientID:      in.ClientId,
+		Value:         in.Value,
 	}
 	authResponse := &pb.AuthorizationProcessNewResponse{}
 
 	response, err := a.usecases.ProcessNewAuthorization(auth)
 	authResponse = &pb.AuthorizationProcessNewResponse{
 		AuthorizationId: response.ID,
-		ClientId:        response.ClientID,
 		TransactionId:   response.TransactionID,
+		ClientId:        response.ClientID,
 		Status:          response.Status,
 		Value:           response.Value,
 	}
