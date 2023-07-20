@@ -12,8 +12,8 @@ func (a *AuthorizationUsecase) ProcessNewAuthorization(auth *dto.AuthorizationPr
 	log.Println("usecase.authorizations.processNewAuthorization")
 
 	response := &dto.AuthorizationProcessResultDto{
-		ClientID: auth.ClientID,
 		TransactionID: auth.TransactionID,
+		ClientID: auth.ClientID,
 		Value: auth.Value,
 	}
 
@@ -41,7 +41,7 @@ func (a *AuthorizationUsecase) ProcessNewAuthorization(auth *dto.AuthorizationPr
 		response.ErrorMessage = entity.ErrTransactionIDAlreadyInUse.Error()
 		return response, entity.ErrTransactionIDAlreadyInUse
 	}
-	// that's OK not founding the transaction, however, if it is another erro, then...
+	// that's OK not finding the transaction, however, if it is another erro, then...
 	if err != entity.ErrAuthorizationIDNotFound {
 		response.ID = ""
 		response.ErrorMessage = err.Error()
