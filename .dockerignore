@@ -1,7 +1,6 @@
 # Referenciam-se ao ambiente de desenvolvimento
 .vscode/
 tmp/
-bin/
 
 # Referenciam-se ao ambiente de desenvolvimento
 **/.docker/postgres/**dbdata*
@@ -9,15 +8,3 @@ bin/
 # Log files
 *.log
 
-# Applications
-*.app
-*.exe
-*.war
-
-# Large media files
-*.mp4
-*.tiff
-*.avi
-*.flv
-*.mov
-*.wmv
